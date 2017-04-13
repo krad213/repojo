@@ -23,8 +23,8 @@ class MainProcessor(elementUtils: Elements, messager: Messager, filler: Filer, t
     fun process(element: Element) {
         if (element is TypeElement) {
             val members = elementUtils.getAllMembers(element)
-            val getters = members.filter { it.kind == ElementKind.METHOD && it.simpleName.startsWith("get") }
-
+            val getters = members.filter { it.kind == ElementKind.METHOD && it.simpleName.startsWith("get") && "getClass" != it.simpleName.toString() }
+            print("");
         }
     }
 
