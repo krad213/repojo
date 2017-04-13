@@ -1,7 +1,7 @@
 project {
     modelVersion '4.0.0'
-    groupId 'su.kore.tools'
-    artifactId 'pojotest'
+    groupId 'su.kore.tools.test'
+    artifactId 'pojoTestTarget'
     version '1-SNAPSHOT'
     //
     // Possibly a more preferrable way to generate the groupId,

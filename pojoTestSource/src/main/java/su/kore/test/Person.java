@@ -1,8 +1,8 @@
 package su.kore.test;
 
-import su.kore.tools.repojo.Pojo;
-
 import java.util.List;
+
+import su.kore.tools.repojo.Pojo;
 
 /**
  * Created by krad on 13.04.2017.
