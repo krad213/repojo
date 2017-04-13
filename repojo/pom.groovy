@@ -17,10 +17,10 @@ project {
             artifactId "kotlin-stdlib"
             version kotlinVersion
         }
-        dependency{
-            groupId "com.google.auto.service"
-            artifactId "auto-service"
-            version "1.0-rc3"
+        dependency {
+            groupId 'com.google.code.gson'
+            artifactId 'gson'
+            version '2.8.0'
         }
     }
 

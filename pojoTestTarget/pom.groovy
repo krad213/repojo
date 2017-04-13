@@ -15,5 +15,14 @@ project {
             artifactId 'repojo'
             version '1-SNAPSHOT'
         }
+
+        dependency {
+            groupId 'su.kore.tools.test'
+            artifactId 'pojoTestSource'
+            version '1-SNAPSHOT'
+            classifier 'sources'
+        }
     }
+
+
 }

@@ -16,4 +16,21 @@ project {
             version '1-SNAPSHOT'
         }
     }
+
+    build {
+        plugins {
+            plugin {
+                groupId 'org.apache.maven.plugins'
+                artifactId 'maven-source-plugin'
+                executions {
+                    execution{
+                        id 'attach-sources'
+                        goals {
+                            goal "jar"
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
