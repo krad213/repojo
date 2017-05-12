@@ -6,3 +6,6 @@ package su.kore.tools.repojo
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.SOURCE)
 annotation class GeneratorConfiguration(val value:String)
+
+
+data class GenConfig (val targets:List<String>)

@@ -27,6 +27,11 @@ project {
             artifactId "javapoet"
             version "1.8.0"
         }
+        dependency{
+            groupId 'com.google.code.gson'
+            artifactId 'gson'
+            version '2.8.0'
+        }
     }
 
 

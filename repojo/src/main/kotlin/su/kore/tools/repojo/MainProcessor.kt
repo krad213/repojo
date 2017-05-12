@@ -19,27 +19,27 @@ import javax.lang.model.element.TypeElement
  */
 class MainProcessor {
 
-    fun process(annotatedSet: Set<Element>) {
-        annotatedSet.forEach { process(it) }
+    fun process(annotatedSet: Set<Element>, targets:Set<String>) {
+        annotatedSet.forEach { process(it, targets)}
     }
 
-    fun process(element: Element) {
+    fun process(element: Element, targets:Set<String>) {
         if (element is TypeElement) {
             val getters = element.getters()
             val properties = getters.map { createPropery(it as ExecutableElement, element) }
             val generate = element.getAnnotationsByType(Generate::class.java).asList()
             val classInfo = ClassInfo(element, properties, generate)
-            write(classInfo)
+            write(classInfo, targets)
         }
     }
 
-    fun write(classInfo: ClassInfo) {
+    fun write(classInfo: ClassInfo, targets: Set<String>) {
         for (generate in classInfo.generate) {
             //TODO: this is quite wrong, redo to plugable generators
             if (generate.targetType == TargetType.POJO) {
                 val classBuilder = TypeSpec.classBuilder("${classInfo.type.simpleName}${generate.suffix}")
                 for (property in classInfo.properties) {
-                    if (!property.excludes.contains(generate.id)) {
+                    if (!property.excludes.contains(generate.target)) {
                         val typeName = TypeName.get(property.type);
                         classBuilder.addField(FieldSpec.builder(typeName, property.name).build())
                     }
@@ -62,7 +62,7 @@ class MainProcessor {
         }
         val type = getter.returnType
 
-        val excludes = getter.getAnnotationsByType(Exclude::class.java).asList().map { it.id }
+        val excludes = getter.getAnnotationsByType(Exclude::class.java).asList().map { it.target }
 
         val readOnly = classElement.getMethod("set${name.capitalize()}") == null
 

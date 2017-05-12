@@ -11,7 +11,7 @@ import java.util.List;
  * Created by krad on 13.04.2017.
  */
 @Pojo
-@Generate(id = "so", targetType = TargetType.POJO, packageName = "su.kore.test.so", suffix = "SO")
+@Generate(target = "so", targetType = TargetType.POJO, packageName = "su.kore.test.so", suffix = "SO")
 public class Person {
     private String name;
     private String surname;
@@ -53,7 +53,7 @@ public class Person {
         this.human = human;
     }
 
-    @Exclude(id = "so")
+    @Exclude(target = "so")
     public Gender getGender() {
         return gender;
     }
