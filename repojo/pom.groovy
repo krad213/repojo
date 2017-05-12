@@ -9,7 +9,7 @@ project {
     //
     // $artifact('io.takari.polyglot:groovy-project:0.0.1-SNAPSHOT')
     //
-    String kotlinVersion = "1.1.1"
+    String kotlinVersion = "1.1.2-2"
 
     dependencies {
         dependency{
@@ -21,6 +21,11 @@ project {
             groupId "com.google.auto.service"
             artifactId "auto-service"
             version "1.0-rc3"
+        }
+        dependency{
+            groupId "com.squareup"
+            artifactId "javapoet"
+            version "1.8.0"
         }
     }
 
@@ -43,9 +48,5 @@ project {
                 }
             }
         }
-
-
-
-
     }
 }

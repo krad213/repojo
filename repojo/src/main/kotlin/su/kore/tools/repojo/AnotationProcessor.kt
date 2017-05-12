@@ -10,17 +10,20 @@ import javax.lang.model.element.TypeElement
 @SupportedAnnotationTypes("su.kore.tools.repojo.Pojo")
 @AutoService(Processor::class)
 class AnotationProcessor : AbstractProcessor() {
-    var mainProcessor: MainProcessor? = null;
+    lateinit var mainProcessor: MainProcessor
 
     override fun init(processingEnv: ProcessingEnvironment?) {
         if (processingEnv?.elementUtils != null && processingEnv.typeUtils != null && processingEnv.filer != null && processingEnv.messager != null) {
-            mainProcessor = MainProcessor(elementUtils = processingEnv.elementUtils, filler = processingEnv.filer, messager = processingEnv.messager, typeUtils = processingEnv.typeUtils)
+            Global.elementUtils = processingEnv.elementUtils
+            Global.typeUtils = processingEnv.typeUtils
+            Global.filer = processingEnv.filer
+            Global.messager = processingEnv.messager
+            mainProcessor = MainProcessor()
         }
     }
 
     override fun process(annotations: MutableSet<out TypeElement>?, roundEnv: RoundEnvironment?): Boolean {
-        if (annotations != null && mainProcessor != null) {
-
+        if (annotations != null) {
             for (annotation in annotations) {
                 val annotated = roundEnv?.getElementsAnnotatedWith(annotation)
                 if (annotated != null) {
