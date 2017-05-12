@@ -35,6 +35,7 @@ class MainProcessor {
 
     fun write(classInfo: ClassInfo) {
         for (generate in classInfo.generate) {
+            //TODO: this is quite wrong, redo to plugable generators
             if (generate.targetType == TargetType.POJO) {
                 val classBuilder = TypeSpec.classBuilder("${classInfo.type.simpleName}${generate.suffix}")
                 for (property in classInfo.properties) {
