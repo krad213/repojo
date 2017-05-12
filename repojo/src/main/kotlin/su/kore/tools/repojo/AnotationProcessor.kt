@@ -27,9 +27,9 @@ class AnotationProcessor : AbstractProcessor() {
 
         if (annotations != null) {
             for (annotation in annotations) {
-                val annotated = roundEnv?.getElementsAnnotatedWith(annotation)
+                val annotated = roundEnv.getElementsAnnotatedWith(annotation)
                 if (annotated != null) {
-                    (mainProcessor as MainProcessor).process(annotated)
+                    mainProcessor.process(annotated)
                 }
             }
         }

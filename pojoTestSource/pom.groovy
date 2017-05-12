@@ -18,12 +18,20 @@ project {
     }
 
     build {
+
         plugins {
             plugin {
                 groupId 'org.apache.maven.plugins'
                 artifactId 'maven-source-plugin'
+                configuration {
+                    skipMain true
+                }
+            }
+            plugin {
+                groupId 'org.apache.maven.plugins'
+                artifactId 'maven-source-plugin'
                 executions {
-                    execution{
+                    execution {
                         id 'attach-sources'
                         goals {
                             goal "jar"
