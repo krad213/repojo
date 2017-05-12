@@ -1,28 +1,31 @@
 package su.kore.tools.repojo
 
-import javax.annotation.processing.AbstractProcessor
-import javax.annotation.processing.ProcessingEnvironment
-import javax.annotation.processing.RoundEnvironment
-import javax.annotation.processing.SupportedAnnotationTypes
+import com.google.auto.service.AutoService
+import javax.annotation.processing.*
 import javax.lang.model.element.TypeElement
 
 /**
  * Created by krad on 12.04.2017.
  */
 @SupportedAnnotationTypes("su.kore.tools.repojo.Pojo", "su.kore.tools.repojo.GeneratorConfiguration")
+@AutoService(Processor::class)
 class AnotationProcessor : AbstractProcessor() {
-    var mainProcessor: MainProcessor? = null;
+    lateinit var mainProcessor: MainProcessor
 
     override fun init(processingEnv: ProcessingEnvironment?) {
         if (processingEnv?.elementUtils != null && processingEnv.typeUtils != null && processingEnv.filer != null && processingEnv.messager != null) {
-            mainProcessor = MainProcessor(elementUtils = processingEnv.elementUtils, filler = processingEnv.filer, messager = processingEnv.messager, typeUtils = processingEnv.typeUtils)
+            Global.elementUtils = processingEnv.elementUtils
+            Global.typeUtils = processingEnv.typeUtils
+            Global.filer = processingEnv.filer
+            Global.messager = processingEnv.messager
+            mainProcessor = MainProcessor()
         }
     }
 
     override fun process(annotations: MutableSet<out TypeElement>?, roundEnv: RoundEnvironment?): Boolean {
         readConfig(roundEnv!!)
 
-        if (annotations != null && mainProcessor != null) {
+        if (annotations != null) {
             for (annotation in annotations) {
                 val annotated = roundEnv?.getElementsAnnotatedWith(annotation)
                 if (annotated != null) {

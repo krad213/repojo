@@ -1,13 +1,17 @@
 package su.kore.test;
 
-import java.util.List;
-
+import su.kore.tools.repojo.Exclude;
+import su.kore.tools.repojo.Generate;
 import su.kore.tools.repojo.Pojo;
+import su.kore.tools.repojo.TargetType;
+
+import java.util.List;
 
 /**
  * Created by krad on 13.04.2017.
  */
 @Pojo
+@Generate(id = "so", targetType = TargetType.POJO, packageName = "su.kore.test.so", suffix = "SO")
 public class Person {
     private String name;
     private String surname;
@@ -15,6 +19,7 @@ public class Person {
     private Boolean human;
     private Gender gender;
     private List<Person> children;
+    private boolean permanent = false;
 
     public String getName() {
         return name;
@@ -48,6 +53,7 @@ public class Person {
         this.human = human;
     }
 
+    @Exclude(id = "so")
     public Gender getGender() {
         return gender;
     }
@@ -56,11 +62,16 @@ public class Person {
         this.gender = gender;
     }
 
+
     public List<Person> getChildren() {
         return children;
     }
 
     public void setChildren(List<Person> children) {
         this.children = children;
+    }
+
+    public boolean isPermanent() {
+        return permanent;
     }
 }
