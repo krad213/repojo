@@ -10,9 +10,12 @@ enum class TargetType {POJO, BUILDER, POJO_WITH_BUILDER }
 @Retention(AnnotationRetention.SOURCE)
 annotation class Pojo
 
+@Repeatable
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.SOURCE)
-annotation class Generate(val target: String, val targetType: TargetType, val packageName: String, val suffix: String)
+annotation class Generate(val target: String, val generatorClass: String, val packageName: String, val suffix: String)
+
+annotation class GenerateList(val value:Array<Generate>)
 
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.SOURCE)

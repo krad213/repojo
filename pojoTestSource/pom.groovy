@@ -18,8 +18,15 @@ project {
     }
 
     build {
-
         plugins {
+            plugin {
+                groupId 'org.apache.maven.plugins'
+                artifactId 'maven-compiler-plugin'
+                configuration {
+                    source '1.8'
+                    target '1.8'
+                }
+            }
             plugin {
                 groupId 'org.apache.maven.plugins'
                 artifactId 'maven-source-plugin'

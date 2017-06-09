@@ -1,13 +1,11 @@
 package su.kore.tools.repojo
 
-import com.squareup.javapoet.FieldSpec
 import com.squareup.javapoet.JavaFile
-import com.squareup.javapoet.TypeName
-import com.squareup.javapoet.TypeSpec
 import su.kore.tools.repojo.Global.elementUtils
 import su.kore.tools.repojo.exceptions.MoreThanOneElementsException
 import su.kore.tools.repojo.meta.ClassInfo
 import su.kore.tools.repojo.meta.Property
+import java.nio.file.Paths
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.ExecutableElement
@@ -19,34 +17,41 @@ import javax.lang.model.element.TypeElement
  */
 class MainProcessor {
 
-    fun process(annotatedSet: Set<Element>, targets:Set<String>) {
-        annotatedSet.forEach { process(it, targets)}
+    fun process(annotatedSet: Set<Element>, targets: Set<String>) {
+        annotatedSet.forEach { process(it, targets) }
     }
 
-    fun process(element: Element, targets:Set<String>) {
+    fun process(element: Element, targets: Set<String>) {
         if (element is TypeElement) {
             val getters = element.getters()
-            val properties = getters.map { createPropery(it as ExecutableElement, element) }
-            val generate = element.getAnnotationsByType(Generate::class.java).asList()
+            val properties = getters.map { createPropery(it as ExecutableElement, element)}
+            val generate = getGenerateInfos(element)
             val classInfo = ClassInfo(element, properties, generate)
             write(classInfo, targets)
         }
     }
 
+    private fun getGenerateInfos(element: Element): ArrayList<Generate> {
+        val generate = ArrayList<Generate>();
+        val fromListAnnotation = element.getAnnotation(GenerateList::class.java)?.value?.asList()
+        val fromRepeatableAnnotation = element.getAnnotationsByType(Generate::class.java)?.asList()
+
+        if (fromListAnnotation != null) {
+            generate.addAll(fromListAnnotation)
+        }
+
+        if (fromRepeatableAnnotation != null) {
+            generate.addAll(fromRepeatableAnnotation)
+        }
+        return generate
+    }
+
     fun write(classInfo: ClassInfo, targets: Set<String>) {
         for (generate in classInfo.generate) {
-            //TODO: this is quite wrong, redo to plugable generators
-            if (generate.targetType == TargetType.POJO) {
-                val classBuilder = TypeSpec.classBuilder("${classInfo.type.simpleName}${generate.suffix}")
-                for (property in classInfo.properties) {
-                    if (!property.excludes.contains(generate.target)) {
-                        val typeName = TypeName.get(property.type);
-                        classBuilder.addField(FieldSpec.builder(typeName, property.name).build())
-                    }
-                }
-
-                val javaFile = JavaFile.builder(generate.packageName, classBuilder.build()).build()
-
+            if (targets.contains(generate.target)) {
+                val generatorClass = Class.forName(generate.generatorClass)
+                val generator = generatorClass.newInstance() as SourceGenerator
+                val javaFile = JavaFile.builder(generate.packageName, generator.generate(generate, classInfo)).build()
                 javaFile.writeTo(Global.filer)
             }
         }

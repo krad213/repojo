@@ -29,7 +29,6 @@ class AnotationProcessor : AbstractProcessor() {
     override fun process(annotations: MutableSet<out TypeElement>?, roundEnv: RoundEnvironment?): Boolean {
         val targets = getTargets(roundEnv!!)
 
-
         if (!targets.isEmpty() && annotations != null) {
             for (annotation in annotations) {
                 val annotated = roundEnv.getElementsAnnotatedWith(annotation)
@@ -42,8 +41,8 @@ class AnotationProcessor : AbstractProcessor() {
         return true
     }
 
-    private fun getTargets(roundEnv: RoundEnvironment) : Set<String> {
+    private fun getTargets(roundEnv: RoundEnvironment): Set<String> {
         val configEntities = roundEnv.getElementsAnnotatedWith(GeneratorConfiguration::class.java)
-        return configEntities.map { it.getAnnotation(GeneratorConfiguration::class.java).value }.flatMap{ gson.fromJson(it, GenConfig::class.java).targets}.toSet()
+        return configEntities.map { it.getAnnotation(GeneratorConfiguration::class.java).value }.flatMap { gson.fromJson(it, GenConfig::class.java).targets }.toSet()
     }
 }

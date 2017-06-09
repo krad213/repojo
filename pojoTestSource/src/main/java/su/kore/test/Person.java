@@ -1,17 +1,22 @@
 package su.kore.test;
 
+import java.util.List;
+
 import su.kore.tools.repojo.Exclude;
 import su.kore.tools.repojo.Generate;
+import su.kore.tools.repojo.GenerateList;
 import su.kore.tools.repojo.Pojo;
-import su.kore.tools.repojo.TargetType;
-
-import java.util.List;
 
 /**
  * Created by krad on 13.04.2017.
  */
 @Pojo
-@Generate(target = "so", targetType = TargetType.POJO, packageName = "su.kore.test.so", suffix = "SO")
+@GenerateList({
+        @Generate(target = "so", generatorClass = "su.kore.tools.repojo.generators.PojoGenerator",
+                packageName = "su.kore.test.sos", suffix = "SO"),
+        @Generate(target = "do", generatorClass = "su.kore.tools.repojo.generators.PojoWithBuilderGenerator",
+                packageName = "su.kore.test.dos", suffix = "DO")
+})
 public class Person {
     private String name;
     private String surname;

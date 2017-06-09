@@ -5,6 +5,6 @@ import su.kore.tools.repojo.GeneratorConfiguration;
 /**
  * Created by adashkov on 13.04.2017.
  */
-@GeneratorConfiguration("{targets:[\"so\"]}")
+@GeneratorConfiguration("{targets:[\"so\",\"do\"]}")
 public class RepojoConfig {
 }
