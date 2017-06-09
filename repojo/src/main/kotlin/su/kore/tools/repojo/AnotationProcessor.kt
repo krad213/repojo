@@ -2,8 +2,6 @@ package su.kore.tools.repojo
 
 import com.google.auto.service.AutoService
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import java.util.ArrayList
 import javax.annotation.processing.*
 import javax.lang.model.element.TypeElement
 

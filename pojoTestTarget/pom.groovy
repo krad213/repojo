@@ -40,7 +40,7 @@ project {
                 executions {
                     execution {
                         id 'unpack'
-                        phase 'process-sources'
+                        phase 'generate-sources'
                         goals {
                             goal 'unpack'
                         }
@@ -65,7 +65,7 @@ project {
                 executions {
                     execution{
                         id 'add-source'
-                        phase 'generate-sources'
+                        phase 'process-sources'
                         goals {
                             goal 'add-source'
                         }

@@ -31,12 +31,8 @@ project {
                 groupId 'org.apache.maven.plugins'
                 artifactId 'maven-source-plugin'
                 configuration {
-                    skipMain true
+                    skipSource true
                 }
-            }
-            plugin {
-                groupId 'org.apache.maven.plugins'
-                artifactId 'maven-source-plugin'
                 executions {
                     execution {
                         id 'attach-sources'

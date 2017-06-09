@@ -13,7 +13,7 @@ import su.kore.tools.repojo.Pojo;
 @Pojo
 @GenerateList({
         @Generate(target = "so", generatorClass = "su.kore.tools.repojo.generators.PojoGenerator",
-                packageName = "su.kore.test.sos", suffix = "SO"),
+                packageName = "su.kore.test.sos", suffix = ""),
         @Generate(target = "do", generatorClass = "su.kore.tools.repojo.generators.PojoWithBuilderGenerator",
                 packageName = "su.kore.test.dos", suffix = "DO")
 })
