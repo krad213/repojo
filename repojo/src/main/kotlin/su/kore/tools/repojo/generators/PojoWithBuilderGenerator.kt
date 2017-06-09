@@ -14,41 +14,70 @@ import javax.lang.model.element.Modifier
 
 class PojoWithBuilderGenerator : SourceGenerator {
     override fun generate(generate: Generate, classInfo: ClassInfo): TypeSpec {
-        val classBuilder = TypeSpec.classBuilder("${classInfo.type.simpleName}${generate.suffix}")
+        val targetClassName = "${classInfo.type.simpleName}${generate.suffix}"
+        val classBuilder = TypeSpec.classBuilder(targetClassName)
         val builderClassBuilder = TypeSpec.classBuilder("Builder").addModifiers(Modifier.PUBLIC)
 
 
         val privateConstructorBuilder = MethodSpec.constructorBuilder().addModifiers(Modifier.PRIVATE)
         val publicConstructorBuilder = MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC)
-                .addParameter(ClassName.bestGuess("Builder"),"builder")
+                .addParameter(ClassName.bestGuess("Builder"), "builder")
+
+        val builderBuildMethod = MethodSpec.methodBuilder("build")
+                .addModifiers(Modifier.PUBLIC)
+                .returns(ClassName.bestGuess(targetClassName))
+                .addCode("return new $targetClassName(this);\n")
+        builderClassBuilder.addMethod(builderBuildMethod.build())
+
+        val builderCopyMethodParam = ParameterSpec.builder(ClassName.bestGuess(targetClassName), "other").build()
+        val builderCopyMethod = MethodSpec.methodBuilder("copy").addModifiers(Modifier.PUBLIC).addParameter(builderCopyMethodParam)
+
+
+        val toStringMethod = MethodSpec.methodBuilder("toString")
+                .addModifiers(Modifier.PUBLIC)
+                .returns(ClassName.bestGuess("java.lang.String"))
+                .addAnnotation(Override::class.java)
+                .addCode("\$T stringBuilder = new \$T();\n", ClassName.bestGuess("java.lang.StringBuilder"), ClassName.bestGuess("java.lang.StringBuilder"))
+                .addCode("stringBuilder.append(\"$targetClassName\");\n")
+                .addCode("stringBuilder.append(\"[\\n\");\n")
+
 
         for (property in classInfo.properties) {
             if (!property.excludes.contains(generate.target)) {
                 val typeName = TypeName.get(property.type)
 
                 privateConstructorBuilder.addCode(emptyValueOf(property))
-                publicConstructorBuilder.addCode(initFromBuilder(property))
+                publicConstructorBuilder.addCode(copyFieldValue("builder", property))
+                builderCopyMethod.addCode(copyFieldValue("other", property))
 
                 classBuilder.addField(createField(typeName, property))
                 classBuilder.addMethod(createGetter(typeName, property))
 
                 builderClassBuilder.addMethod(createBuilderSetter(typeName, property))
                 builderClassBuilder.addField(createBuilderField(typeName, property))
+
+                toStringMethod.addCode("stringBuilder.append(\"${property.name}=\"+${property.name});\n")
+                        .addCode("stringBuilder.append(\"\\n\");\n")
             }
         }
+        toStringMethod.addCode("stringBuilder.append(\"]\");\n")
+                .addCode("return stringBuilder.toString();\n")
+
+        builderClassBuilder.addMethod(builderCopyMethod.build())
         classBuilder.addMethod(privateConstructorBuilder.build())
         classBuilder.addMethod(publicConstructorBuilder.build())
         classBuilder.addType(builderClassBuilder.build())
+        classBuilder.addMethod(toStringMethod.build())
         return classBuilder.build()
     }
 
-    private fun initFromBuilder(property: Property): CodeBlock {
-        return CodeBlock.of("${property.name} = builder.${property.name};\n")
+    private fun copyFieldValue(paramName: String, property: Property): CodeBlock {
+        return CodeBlock.of("${property.name} = $paramName.${property.name};\n")
     }
 
     private fun emptyValueOf(property: Property): CodeBlock {
         val type = property.type
-        val codeBlock : CodeBlock
+        val codeBlock: CodeBlock
         when {
             type.erasureEquals(List::class.java) -> codeBlock = CodeBlock.of("${property.name} = \$T.EMPTY_LIST;\n", ClassName.bestGuess("java.util.Collections"))
             type.erasureEquals(Map::class.java) -> codeBlock = CodeBlock.of("${property.name} = \$T.EMPTY_MAP;\n", ClassName.bestGuess("java.util.Collections"))
@@ -89,14 +118,14 @@ class PojoWithBuilderGenerator : SourceGenerator {
     }
 
     private fun createGetter(typeName: TypeName, property: Property): MethodSpec {
-        val prefix : String
+        val prefix: String
         if (typeName.isPrimitive && "boolean" == typeName.toString()) {
             prefix = "is"
-        } else{
+        } else {
             prefix = "get"
         }
 
-        val name = prefix+property.name.capitalize()
+        val name = prefix + property.name.capitalize()
 
         val methodBuilder = MethodSpec.methodBuilder(name)
                 .returns(typeName)
