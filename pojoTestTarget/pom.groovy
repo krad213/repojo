@@ -40,10 +40,11 @@ project {
                         }
                         phase 'generate-sources'
                         configuration {
-                            source 1.8
-                            target 1.8
-                            additionalSourceDirectories {
-                                file '${project.build.directory}/pojoTestSource'
+                            source '1.8'
+                            target '1.8'
+                            appendSourceArtifacts 'true'
+                            processSourceArtifacts {
+                                processSourceArtifact 'su.kore.tools.test:pojoTestSource:sources'
                             }
                         }
                     }
@@ -56,31 +57,6 @@ project {
                     source 1.8
                     target 1.8
                     compilerArgument '-proc:none'
-                }
-            }
-            plugin {
-                groupId 'org.apache.maven.plugins'
-                artifactId 'maven-dependency-plugin'
-                executions {
-                    execution {
-                        id 'unpack'
-                        phase 'initialize'
-                        goals {
-                            goal 'unpack'
-                        }
-                        configuration {
-                            artifactItems {
-                                artifactItem {
-                                    groupId 'su.kore.tools.test'
-                                    artifactId 'pojoTestSource'
-                                    version '1-SNAPSHOT'
-                                    classifier 'sources'
-                                    overWrite true
-                                    outputDirectory '${project.build.directory}/pojoTestSource'
-                                }
-                            }
-                        }
-                    }
                 }
             }
             plugin {
