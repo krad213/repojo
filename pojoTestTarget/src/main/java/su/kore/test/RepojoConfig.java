@@ -1,10 +1,10 @@
 package su.kore.test;
 
-import su.kore.tools.repojo.GeneratorConfiguration;
+import su.kore.tools.repojo.GeneratorTargets;
 
 /**
  * Created by adashkov on 13.04.2017.
  */
-@GeneratorConfiguration("{targets:[\"so\",\"do\"]}")
+@GeneratorTargets({"so", "do"})
 public class RepojoConfig {
 }

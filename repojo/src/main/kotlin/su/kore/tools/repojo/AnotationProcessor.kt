@@ -8,7 +8,7 @@ import javax.lang.model.element.TypeElement
 /**
  * Created by krad on 12.04.2017.
  */
-@SupportedAnnotationTypes("su.kore.tools.repojo.MetaClass", "su.kore.tools.repojo.GeneratorConfiguration")
+@SupportedAnnotationTypes("su.kore.tools.repojo.MetaClass", "su.kore.tools.repojo.GeneratorTargets")
 @AutoService(Processor::class)
 class AnotationProcessor : AbstractProcessor() {
     lateinit var mainProcessor: MainProcessor
@@ -42,7 +42,7 @@ class AnotationProcessor : AbstractProcessor() {
     }
 
     private fun getTargets(roundEnv: RoundEnvironment): Set<String> {
-        val configEntities = roundEnv.getElementsAnnotatedWith(GeneratorConfiguration::class.java)
-        return configEntities.map { it.getAnnotation(GeneratorConfiguration::class.java).value }.flatMap { gson.fromJson(it, GenConfig::class.java).targets }.toSet()
+        val configEntities = roundEnv.getElementsAnnotatedWith(GeneratorTargets::class.java)
+        return configEntities.flatMap { it.getAnnotation(GeneratorTargets::class.java).value.asList() }.toSet()
     }
 }
