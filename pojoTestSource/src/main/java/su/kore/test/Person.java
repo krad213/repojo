@@ -1,11 +1,10 @@
 package su.kore.test;
 
-import java.util.List;
-
-import su.kore.tools.repojo.Exclude;
 import su.kore.tools.repojo.Generate;
 import su.kore.tools.repojo.GenerateList;
 import su.kore.tools.repojo.MetaClass;
+
+import java.util.List;
 
 /**
  * Created by krad on 13.04.2017.
@@ -22,9 +21,9 @@ public class Person {
     private String surname;
     private Integer age;
     private Boolean human;
-    private Gender gender;
     private List<Person> children;
     private Person mate;
+    private Address address;
     private boolean permanent = false;
 
     public String getName() {
@@ -59,16 +58,6 @@ public class Person {
         this.human = human;
     }
 
-    @Exclude(target = "so")
-    public Gender getGender() {
-        return gender;
-    }
-
-    public void setGender(Gender gender) {
-        this.gender = gender;
-    }
-
-
     public List<Person> getChildren() {
         return children;
     }
@@ -87,5 +76,13 @@ public class Person {
 
     public void setMate(Person mate) {
         this.mate = mate;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
     }
 }

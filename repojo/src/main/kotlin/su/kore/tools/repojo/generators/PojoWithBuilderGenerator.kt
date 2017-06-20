@@ -3,7 +3,6 @@ package su.kore.tools.repojo.generators
 import com.squareup.javapoet.*
 import su.kore.tools.repojo.AbstractSourceGenerator
 import su.kore.tools.repojo.Generate
-import su.kore.tools.repojo.SourceGenerator
 import su.kore.tools.repojo.erasureEquals
 import su.kore.tools.repojo.meta.ClassInfo
 import su.kore.tools.repojo.meta.Property
@@ -16,7 +15,7 @@ import javax.lang.model.element.Modifier
 class PojoWithBuilderGenerator() : AbstractSourceGenerator() {
     override fun generate(generate: Generate, classInfo: ClassInfo, knownClassesMap: HashMap<TypeName, ClassInfo>): TypeSpec {
         val targetClassName = "${classInfo.simpleName}${generate.suffix}"
-        val classBuilder = TypeSpec.classBuilder(targetClassName)
+        val classBuilder = TypeSpec.classBuilder(targetClassName).addModifiers(Modifier.PUBLIC)
         val builderClassBuilder = TypeSpec.classBuilder("Builder").addModifiers(Modifier.PUBLIC)
 
 

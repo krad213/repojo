@@ -14,6 +14,7 @@ project {
             groupId 'su.kore.tools'
             artifactId 'repojo'
             version '1-SNAPSHOT'
+            optional true
         }
 
         dependency {
@@ -21,17 +22,40 @@ project {
             artifactId 'pojoTestSource'
             version '1-SNAPSHOT'
             classifier 'sources'
+            optional true
         }
     }
 
     build {
         plugins {
             plugin {
+                groupId 'org.bsc.maven'
+                artifactId 'maven-processor-plugin'
+                version '3.3.1'
+                executions {
+                    execution {
+                        id 'process'
+                        goals {
+                            goal 'process'
+                        }
+                        phase 'generate-sources'
+                        configuration {
+                            source 1.8
+                            target 1.8
+                            additionalSourceDirectories {
+                                file '${project.build.directory}/pojoTestSource'
+                            }
+                        }
+                    }
+                }
+            }
+            plugin {
                 groupId 'org.apache.maven.plugins'
                 artifactId 'maven-compiler-plugin'
                 configuration {
                     source 1.8
                     target 1.8
+                    compilerArgument '-proc:none'
                 }
             }
             plugin {
@@ -40,7 +64,7 @@ project {
                 executions {
                     execution {
                         id 'unpack'
-                        phase 'generate-sources'
+                        phase 'initialize'
                         goals {
                             goal 'unpack'
                         }
@@ -63,7 +87,7 @@ project {
                 groupId 'org.codehaus.mojo'
                 artifactId 'build-helper-maven-plugin'
                 executions {
-                    execution{
+                    execution {
                         id 'add-source'
                         phase 'process-sources'
                         goals {
@@ -71,8 +95,9 @@ project {
                         }
                         configuration {
                             sources {
-                                source '${project.build.directory}/pojoTestSource'
+                                source '${project.build.directory}/generated-sources/apt'
                             }
+
                         }
                     }
                 }
