@@ -1,9 +1,7 @@
 package su.kore.tools.repojo
 
-import com.squareup.javapoet.FieldSpec
 import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.TypeName
-import com.squareup.javapoet.TypeSpec
 import su.kore.tools.repojo.Global.elementUtils
 import su.kore.tools.repojo.exceptions.MoreThanOneElementsException
 import su.kore.tools.repojo.meta.ClassInfo
@@ -18,34 +16,45 @@ import javax.lang.model.element.TypeElement
  * Created by krad on 13.04.2017.
  */
 class MainProcessor {
+    val knownClassesMap = HashMap<TypeName, ClassInfo>()
 
-    fun process(annotatedSet: Set<Element>) {
-        annotatedSet.forEach { process(it) }
+    fun process(annotatedSet: Set<Element>, targets: Set<String>) {
+        annotatedSet.forEach { createMetadata(it) }
+        knownClassesMap.values.forEach { write(it, targets) }
     }
 
-    fun process(element: Element) {
+
+    fun createMetadata(element: Element) {
         if (element is TypeElement) {
             val getters = element.getters()
             val properties = getters.map { createPropery(it as ExecutableElement, element) }
-            val generate = element.getAnnotationsByType(Generate::class.java).asList()
-            val classInfo = ClassInfo(element, properties, generate)
-            write(classInfo)
+            val generate = getGenerateInfos(element)
+            val classInfo = ClassInfo(TypeName.get(element.asType()), element.simpleName.toString(), properties, generate)
+            knownClassesMap.put(classInfo.type, classInfo)
         }
     }
 
-    fun write(classInfo: ClassInfo) {
+    private fun getGenerateInfos(element: Element): ArrayList<Generate> {
+        val generate = ArrayList<Generate>();
+        val fromListAnnotation = element.getAnnotation(GenerateList::class.java)?.value?.asList()
+        val fromRepeatableAnnotation = element.getAnnotationsByType(Generate::class.java)?.asList()
+
+        if (fromListAnnotation != null) {
+            generate.addAll(fromListAnnotation)
+        }
+
+        if (fromRepeatableAnnotation != null) {
+            generate.addAll(fromRepeatableAnnotation)
+        }
+        return generate
+    }
+
+    fun write(classInfo: ClassInfo, targets: Set<String>) {
         for (generate in classInfo.generate) {
-            if (generate.targetType == TargetType.POJO) {
-                val classBuilder = TypeSpec.classBuilder("${classInfo.type.simpleName}${generate.suffix}")
-                for (property in classInfo.properties) {
-                    if (!property.excludes.contains(generate.id)) {
-                        val typeName = TypeName.get(property.type);
-                        classBuilder.addField(FieldSpec.builder(typeName, property.name).build())
-                    }
-                }
-
-                val javaFile = JavaFile.builder(generate.packageName, classBuilder.build()).build()
-
+            if (targets.contains(generate.target)) {
+                val generatorClass = Class.forName(generate.generatorClass)
+                val generator = generatorClass.newInstance() as SourceGenerator
+                val javaFile = JavaFile.builder(generate.packageName, generator.generate(generate, classInfo, knownClassesMap)).build()
                 javaFile.writeTo(Global.filer)
             }
         }
@@ -61,11 +70,11 @@ class MainProcessor {
         }
         val type = getter.returnType
 
-        val excludes = getter.getAnnotationsByType(Exclude::class.java).asList().map { it.id }
+        val excludes = getter.getAnnotationsByType(Exclude::class.java).asList().map { it.target }
 
         val readOnly = classElement.getMethod("set${name.capitalize()}") == null
 
-        return Property(name, type, readOnly, excludes)
+        return Property(name, TypeName.get(type), readOnly, excludes)
     }
 
 

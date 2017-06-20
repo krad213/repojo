@@ -1,7 +1,7 @@
 project {
     modelVersion '4.0.0'
     groupId 'su.kore.tools'
-    artifactId 'root'
+    artifactId 'repojoRoot'
     version '1-SNAPSHOT'
     //
     // Possibly a more preferrable way to generate the groupId,
@@ -13,6 +13,7 @@ project {
 
     modules {
         module("repojo")
-        module("pojotest")
+        module("pojoTestSource")
+        module("pojoTestTarget")
     }
 }

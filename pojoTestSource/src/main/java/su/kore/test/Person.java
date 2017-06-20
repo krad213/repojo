@@ -1,17 +1,22 @@
 package su.kore.test;
 
+import java.util.List;
+
 import su.kore.tools.repojo.Exclude;
 import su.kore.tools.repojo.Generate;
-import su.kore.tools.repojo.Pojo;
-import su.kore.tools.repojo.TargetType;
-
-import java.util.List;
+import su.kore.tools.repojo.GenerateList;
+import su.kore.tools.repojo.MetaClass;
 
 /**
  * Created by krad on 13.04.2017.
  */
-@Pojo
-@Generate(id = "so", targetType = TargetType.POJO, packageName = "su.kore.test.so", suffix = "SO")
+@MetaClass
+@GenerateList({
+        @Generate(target = "so", generatorClass = "su.kore.tools.repojo.generators.PojoGenerator",
+                packageName = "su.kore.test.sos", suffix = ""),
+        @Generate(target = "do", generatorClass = "su.kore.tools.repojo.generators.PojoWithBuilderGenerator",
+                packageName = "su.kore.test.dos", suffix = "DO")
+})
 public class Person {
     private String name;
     private String surname;
@@ -19,6 +24,7 @@ public class Person {
     private Boolean human;
     private Gender gender;
     private List<Person> children;
+    private Person mate;
     private boolean permanent = false;
 
     public String getName() {
@@ -53,7 +59,7 @@ public class Person {
         this.human = human;
     }
 
-    @Exclude(id = "so")
+    @Exclude(target = "so")
     public Gender getGender() {
         return gender;
     }
@@ -73,5 +79,13 @@ public class Person {
 
     public boolean isPermanent() {
         return permanent;
+    }
+
+    public Person getMate() {
+        return mate;
+    }
+
+    public void setMate(Person mate) {
+        this.mate = mate;
     }
 }

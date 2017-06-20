@@ -9,12 +9,21 @@ project {
     //
     // $artifact('io.takari.polyglot:groovy-project:0.0.1-SNAPSHOT')
     //
-    String kotlinVersion = "1.1.2-2"
+    String kotlinVersion = '1.1.2-2'
+
+    properties {
+        'kotlin.compiler.jvmTarget' '1.8'
+    }
 
     dependencies {
         dependency{
             groupId "org.jetbrains.kotlin"
             artifactId "kotlin-stdlib"
+            version kotlinVersion
+        }
+        dependency{
+            groupId "org.jetbrains.kotlin"
+            artifactId "kotlin-reflect"
             version kotlinVersion
         }
         dependency{
@@ -26,6 +35,11 @@ project {
             groupId "com.squareup"
             artifactId "javapoet"
             version "1.8.0"
+        }
+        dependency{
+            groupId 'com.google.code.gson'
+            artifactId 'gson'
+            version '2.8.0'
         }
     }
 
