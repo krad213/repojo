@@ -1,6 +1,7 @@
 package su.kore.tools.repojo.generators
 
 import com.squareup.javapoet.*
+import su.kore.tools.repojo.AbstractSourceGenerator
 import su.kore.tools.repojo.Generate
 import su.kore.tools.repojo.SourceGenerator
 import su.kore.tools.repojo.meta.ClassInfo
@@ -11,25 +12,28 @@ import javax.lang.model.element.Modifier
  * Created by adashkov on 09.06.2017.
  */
 
-class PojoGenerator : SourceGenerator {
-    override fun generate(generate: Generate, classInfo: ClassInfo): TypeSpec {
-        val classBuilder = TypeSpec.classBuilder("${classInfo.type.simpleName}${generate.suffix}")
+class PojoGenerator() : AbstractSourceGenerator() {
+
+    override fun generate(generate: Generate, classInfo: ClassInfo, knownClassesMap: HashMap<TypeName, ClassInfo>): TypeSpec {
+        val classBuilder = TypeSpec.classBuilder(getGeneratedName(classInfo, generate))
         for (property in classInfo.properties) {
             if (!property.excludes.contains(generate.target)) {
-                val typeName = TypeName.get(property.type)
-                classBuilder.addField(createField(typeName, property))
-                classBuilder.addMethod(createGetter(typeName, property))
-                classBuilder.addMethod(createSetter(typeName, property))
+                val type = resolveTypeName(property.type, generate, knownClassesMap)
+                classBuilder.addField(createField(property, type))
+                classBuilder.addMethod(createGetter(property, type))
+                classBuilder.addMethod(createSetter(property, type))
             }
         }
         return classBuilder.build()
     }
 
-    private fun createField(typeName: TypeName, property: Property): FieldSpec {
-        return FieldSpec.builder(typeName, property.name).addModifiers(Modifier.PRIVATE).build()
+    private fun getGeneratedName(classInfo: ClassInfo, generate: Generate) = "${classInfo.simpleName}${generate.suffix}"
+
+    private fun createField(property: Property, type: TypeName): FieldSpec {
+        return FieldSpec.builder(type, property.name).addModifiers(Modifier.PRIVATE).build()
     }
 
-    private fun createGetter(typeName: TypeName, property: Property): MethodSpec {
+    private fun createGetter(property: Property, typeName: TypeName): MethodSpec {
         val prefix : String
         if (typeName.isPrimitive && "boolean" == typeName.toString()) {
             prefix = "is"
@@ -47,9 +51,9 @@ class PojoGenerator : SourceGenerator {
         return methodBuilder.build()
     }
 
-    private fun createSetter(typeName: TypeName, property: Property): MethodSpec {
+    private fun createSetter(property: Property, type: TypeName): MethodSpec {
         val name = "set${property.name.capitalize()}"
-        val parameterSpec = ParameterSpec.builder(typeName, property.name).build()
+        val parameterSpec = ParameterSpec.builder(type, property.name).build()
         val methodBuilder = MethodSpec.methodBuilder(name)
                 .addParameter(parameterSpec)
                 .addModifiers(Modifier.PUBLIC)

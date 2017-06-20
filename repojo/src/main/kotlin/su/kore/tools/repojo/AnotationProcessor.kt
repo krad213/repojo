@@ -8,7 +8,7 @@ import javax.lang.model.element.TypeElement
 /**
  * Created by krad on 12.04.2017.
  */
-@SupportedAnnotationTypes("su.kore.tools.repojo.Pojo", "su.kore.tools.repojo.GeneratorConfiguration")
+@SupportedAnnotationTypes("su.kore.tools.repojo.MetaClass", "su.kore.tools.repojo.GeneratorConfiguration")
 @AutoService(Processor::class)
 class AnotationProcessor : AbstractProcessor() {
     lateinit var mainProcessor: MainProcessor
@@ -29,9 +29,11 @@ class AnotationProcessor : AbstractProcessor() {
 
         if (!targets.isEmpty() && annotations != null) {
             for (annotation in annotations) {
-                val annotated = roundEnv.getElementsAnnotatedWith(annotation)
-                if (annotated != null) {
-                    mainProcessor.process(annotated, targets)
+                if (annotation.qualifiedName.toString() == MetaClass::class.qualifiedName) {
+                    val annotated = roundEnv.getElementsAnnotatedWith(annotation)
+                    if (annotated != null) {
+                        mainProcessor.process(annotated, targets)
+                    }
                 }
             }
         }

@@ -5,12 +5,12 @@ import java.util.List;
 import su.kore.tools.repojo.Exclude;
 import su.kore.tools.repojo.Generate;
 import su.kore.tools.repojo.GenerateList;
-import su.kore.tools.repojo.Pojo;
+import su.kore.tools.repojo.MetaClass;
 
 /**
  * Created by krad on 13.04.2017.
  */
-@Pojo
+@MetaClass
 @GenerateList({
         @Generate(target = "so", generatorClass = "su.kore.tools.repojo.generators.PojoGenerator",
                 packageName = "su.kore.test.sos", suffix = ""),
@@ -24,6 +24,7 @@ public class Person {
     private Boolean human;
     private Gender gender;
     private List<Person> children;
+    private Person mate;
     private boolean permanent = false;
 
     public String getName() {
@@ -78,5 +79,13 @@ public class Person {
 
     public boolean isPermanent() {
         return permanent;
+    }
+
+    public Person getMate() {
+        return mate;
+    }
+
+    public void setMate(Person mate) {
+        this.mate = mate;
     }
 }

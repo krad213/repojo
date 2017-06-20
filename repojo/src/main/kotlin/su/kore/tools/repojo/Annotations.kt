@@ -8,7 +8,7 @@ enum class TargetType {POJO, BUILDER, POJO_WITH_BUILDER }
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.SOURCE)
-annotation class Pojo
+annotation class MetaClass
 
 @Repeatable
 @Target(AnnotationTarget.CLASS)

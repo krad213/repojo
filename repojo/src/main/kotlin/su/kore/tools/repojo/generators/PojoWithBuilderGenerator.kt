@@ -1,6 +1,7 @@
 package su.kore.tools.repojo.generators
 
 import com.squareup.javapoet.*
+import su.kore.tools.repojo.AbstractSourceGenerator
 import su.kore.tools.repojo.Generate
 import su.kore.tools.repojo.SourceGenerator
 import su.kore.tools.repojo.erasureEquals
@@ -12,9 +13,9 @@ import javax.lang.model.element.Modifier
  * Created by adashkov on 09.06.2017.
  */
 
-class PojoWithBuilderGenerator : SourceGenerator {
-    override fun generate(generate: Generate, classInfo: ClassInfo): TypeSpec {
-        val targetClassName = "${classInfo.type.simpleName}${generate.suffix}"
+class PojoWithBuilderGenerator() : AbstractSourceGenerator() {
+    override fun generate(generate: Generate, classInfo: ClassInfo, knownClassesMap: HashMap<TypeName, ClassInfo>): TypeSpec {
+        val targetClassName = "${classInfo.simpleName}${generate.suffix}"
         val classBuilder = TypeSpec.classBuilder(targetClassName)
         val builderClassBuilder = TypeSpec.classBuilder("Builder").addModifiers(Modifier.PUBLIC)
 
@@ -44,9 +45,9 @@ class PojoWithBuilderGenerator : SourceGenerator {
 
         for (property in classInfo.properties) {
             if (!property.excludes.contains(generate.target)) {
-                val typeName = TypeName.get(property.type)
+                val typeName = resolveTypeName(property.type, generate, knownClassesMap)
 
-                privateConstructorBuilder.addCode(emptyValueOf(property))
+                privateConstructorBuilder.addCode(emptyValueOf(property, typeName))
                 publicConstructorBuilder.addCode(copyFieldValue("builder", property))
                 builderCopyMethod.addCode(copyFieldValue("other", property))
 
@@ -75,14 +76,13 @@ class PojoWithBuilderGenerator : SourceGenerator {
         return CodeBlock.of("${property.name} = $paramName.${property.name};\n")
     }
 
-    private fun emptyValueOf(property: Property): CodeBlock {
-        val type = property.type
+    private fun emptyValueOf(property: Property, type : TypeName): CodeBlock {
         val codeBlock: CodeBlock
         when {
             type.erasureEquals(List::class.java) -> codeBlock = CodeBlock.of("${property.name} = \$T.EMPTY_LIST;\n", ClassName.bestGuess("java.util.Collections"))
             type.erasureEquals(Map::class.java) -> codeBlock = CodeBlock.of("${property.name} = \$T.EMPTY_MAP;\n", ClassName.bestGuess("java.util.Collections"))
             type.erasureEquals(Set::class.java) -> codeBlock = CodeBlock.of("${property.name} = \$T.EMPTY_SET;\n", ClassName.bestGuess("java.util.Collections"))
-            type.kind.isPrimitive -> {
+            type.isPrimitive -> {
                 when {
                     type.toString() == "boolean" -> codeBlock = CodeBlock.of("${property.name} = false;\n")
                     type.toString() == "long" -> codeBlock = CodeBlock.of("${property.name} = 0L;\n")
@@ -97,7 +97,7 @@ class PojoWithBuilderGenerator : SourceGenerator {
     }
 
     private fun createBuilderSetter(typeName: TypeName, property: Property): MethodSpec {
-        val name = property.name.capitalize()
+        val name = property.name
         val parameterSpec = ParameterSpec.builder(typeName, property.name).build()
         val methodBuilder = MethodSpec.methodBuilder(name)
                 .returns(ClassName.bestGuess("Builder"))

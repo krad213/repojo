@@ -1,11 +1,11 @@
 package su.kore.tools.repojo
 
 import com.squareup.javapoet.JavaFile
+import com.squareup.javapoet.TypeName
 import su.kore.tools.repojo.Global.elementUtils
 import su.kore.tools.repojo.exceptions.MoreThanOneElementsException
 import su.kore.tools.repojo.meta.ClassInfo
 import su.kore.tools.repojo.meta.Property
-import java.nio.file.Paths
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.ExecutableElement
@@ -16,18 +16,21 @@ import javax.lang.model.element.TypeElement
  * Created by krad on 13.04.2017.
  */
 class MainProcessor {
+    val knownClassesMap = HashMap<TypeName, ClassInfo>()
 
     fun process(annotatedSet: Set<Element>, targets: Set<String>) {
-        annotatedSet.forEach { process(it, targets) }
+        annotatedSet.forEach { createMetadata(it) }
+        knownClassesMap.values.forEach { write(it, targets) }
     }
 
-    fun process(element: Element, targets: Set<String>) {
+
+    fun createMetadata(element: Element) {
         if (element is TypeElement) {
             val getters = element.getters()
-            val properties = getters.map { createPropery(it as ExecutableElement, element)}
+            val properties = getters.map { createPropery(it as ExecutableElement, element) }
             val generate = getGenerateInfos(element)
-            val classInfo = ClassInfo(element, properties, generate)
-            write(classInfo, targets)
+            val classInfo = ClassInfo(TypeName.get(element.asType()), element.simpleName.toString(), properties, generate)
+            knownClassesMap.put(classInfo.type, classInfo)
         }
     }
 
@@ -51,7 +54,7 @@ class MainProcessor {
             if (targets.contains(generate.target)) {
                 val generatorClass = Class.forName(generate.generatorClass)
                 val generator = generatorClass.newInstance() as SourceGenerator
-                val javaFile = JavaFile.builder(generate.packageName, generator.generate(generate, classInfo)).build()
+                val javaFile = JavaFile.builder(generate.packageName, generator.generate(generate, classInfo, knownClassesMap)).build()
                 javaFile.writeTo(Global.filer)
             }
         }
@@ -71,7 +74,7 @@ class MainProcessor {
 
         val readOnly = classElement.getMethod("set${name.capitalize()}") == null
 
-        return Property(name, type, readOnly, excludes)
+        return Property(name, TypeName.get(type), readOnly, excludes)
     }
 
 
