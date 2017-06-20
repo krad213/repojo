@@ -72,7 +72,14 @@ class PojoWithBuilderGenerator() : AbstractSourceGenerator() {
     }
 
     private fun copyFieldValue(paramName: String, property: Property): CodeBlock {
-        return CodeBlock.of("${property.name} = $paramName.${property.name};\n")
+        val codeBlock: CodeBlock
+        when {
+            property.type.erasureEquals(List::class.java) -> codeBlock = CodeBlock.of("${property.name} = new \$T<>($paramName.${property.name});\n", ClassName.bestGuess("java.util.ArrayList"))
+            property.type.erasureEquals(Map::class.java) -> codeBlock = CodeBlock.of("${property.name} = new \$T<>($paramName.${property.name});\n", ClassName.bestGuess("java.util.HashMap"))
+            property.type.erasureEquals(Set::class.java) -> codeBlock = CodeBlock.of("${property.name} = new \$T<>($paramName.${property.name});\n", ClassName.bestGuess("java.util.HashSet"))
+            else -> codeBlock = CodeBlock.of("${property.name} = $paramName.${property.name};\n")
+        }
+        return codeBlock
     }
 
     private fun emptyValueOf(property: Property, type : TypeName): CodeBlock {

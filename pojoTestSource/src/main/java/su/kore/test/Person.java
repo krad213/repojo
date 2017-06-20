@@ -1,5 +1,6 @@
 package su.kore.test;
 
+import su.kore.tools.repojo.Exclude;
 import su.kore.tools.repojo.Generate;
 import su.kore.tools.repojo.GenerateList;
 import su.kore.tools.repojo.MetaClass;
@@ -66,6 +67,7 @@ public class Person {
         this.children = children;
     }
 
+    @Exclude({"so", "do"})
     public boolean isPermanent() {
         return permanent;
     }

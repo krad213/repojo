@@ -70,7 +70,7 @@ class MainProcessor {
         }
         val type = getter.returnType
 
-        val excludes = getter.getAnnotationsByType(Exclude::class.java).asList().map { it.target }
+        val excludes = getter.getAnnotationsByType(Exclude::class.java).asList().flatMap { it.value.asList() }
 
         val readOnly = classElement.getMethod("set${name.capitalize()}") == null
 

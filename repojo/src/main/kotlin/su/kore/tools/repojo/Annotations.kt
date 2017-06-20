@@ -17,6 +17,7 @@ annotation class Generate(val target: String, val generatorClass: String, val pa
 
 annotation class GenerateList(val value:Array<Generate>)
 
+
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.SOURCE)
-annotation class Exclude(val target: String)
+annotation class Exclude(val value: Array<String>)

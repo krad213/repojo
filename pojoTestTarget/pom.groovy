@@ -54,8 +54,8 @@ project {
                 groupId 'org.apache.maven.plugins'
                 artifactId 'maven-compiler-plugin'
                 configuration {
-                    source 1.8
-                    target 1.8
+                    source '1.8'
+                    target '1.8'
                     compilerArgument '-proc:none'
                 }
             }
