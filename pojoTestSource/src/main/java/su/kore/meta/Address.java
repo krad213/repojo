@@ -1,4 +1,4 @@
-package su.kore.test;
+package su.kore.meta;
 
 import su.kore.tools.repojo.Generate;
 import su.kore.tools.repojo.GenerateList;
@@ -16,7 +16,7 @@ import su.kore.tools.repojo.generators.PojoWithBuilderGenerator;
         @Generate(target = "do", generatorClass = PojoWithBuilderGenerator.class,
                 packageName = "su.kore.test.dos", suffix = "DO")
 })
-public class Address {
+class Address {
     private String street;
     private Integer house;
 
