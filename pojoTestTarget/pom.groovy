@@ -40,8 +40,6 @@ project {
                         }
                         phase 'generate-sources'
                         configuration {
-                            source '1.8'
-                            target '1.8'
                             appendSourceArtifacts 'true'
                             processSourceArtifacts {
                                 processSourceArtifact 'su.kore.tools.test:pojoTestSource:sources'
@@ -57,25 +55,6 @@ project {
                     source '1.8'
                     target '1.8'
                     compilerArgument '-proc:none'
-                }
-            }
-            plugin {
-                groupId 'org.codehaus.mojo'
-                artifactId 'build-helper-maven-plugin'
-                executions {
-                    execution {
-                        id 'add-source'
-                        phase 'process-sources'
-                        goals {
-                            goal 'add-source'
-                        }
-                        configuration {
-                            sources {
-                                source '${project.build.directory}/generated-sources/apt'
-                            }
-
-                        }
-                    }
                 }
             }
         }
