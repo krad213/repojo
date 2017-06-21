@@ -11,7 +11,7 @@ import javax.lang.model.element.Modifier
  * Created by adashkov on 09.06.2017.
  */
 
-class PojoGenerator() : AbstractSourceGenerator() {
+class PojoGenerator : AbstractSourceGenerator() {
 
     override fun generate(generate: Generate, classInfo: ClassInfo, knownClassesMap: HashMap<TypeName, ClassInfo>): TypeSpec {
         val classBuilder = TypeSpec.classBuilder(getGeneratedName(classInfo, generate)).addModifiers(Modifier.PUBLIC)
