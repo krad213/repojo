@@ -24,8 +24,18 @@ abstract class AbstractSourceGenerator : SourceGenerator {
         if (ref == null) {
             return typeName
         } else {
-            return ClassName.bestGuess("${generate.packageName}.${ref.simpleName}${generate.suffix}")
+            val sameTarget = getSameTarget(ref.generate, generate)
+            return ClassName.bestGuess("${generate.packageName}.${ref.simpleName}${sameTarget.suffix}")
         }
+    }
+
+    private fun getSameTarget(generateList: List<Generate>, sample: Generate) : Generate{
+        for (generate in generateList) {
+            if (generate.target == sample.target) {
+                return generate
+            }
+        }
+        throw UnknownError("Should not happen")
     }
 
     private fun resolveParamitrizedTypeName(typeName: ParameterizedTypeName, generate: Generate, typeMap: HashMap<TypeName, ClassInfo>): TypeName {

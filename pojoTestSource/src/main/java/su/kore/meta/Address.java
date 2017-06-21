@@ -14,7 +14,7 @@ import su.kore.tools.repojo.generators.PojoWithBuilderGenerator;
         @Generate(target = "so", generatorClass = PojoGenerator.class,
                 packageName = "su.kore.test.sos", suffix = ""),
         @Generate(target = "do", generatorClass = PojoWithBuilderGenerator.class,
-                packageName = "su.kore.test.dos", suffix = "DO")
+                packageName = "su.kore.test.dos", suffix = "DOm")
 })
 class Address {
     private String street;
