@@ -52,7 +52,7 @@ class MainProcessor {
     fun write(classInfo: ClassInfo, targets: Set<String>) {
         for (generate in classInfo.generate) {
             if (targets.contains(generate.target)) {
-                val generatorClass = Class.forName(generate.generatorClass)
+                val generatorClass = generate.getGeneratorClassVal()
                 val generator = generatorClass.newInstance() as SourceGenerator
                 val javaFile = JavaFile.builder(generate.packageName, generator.generate(generate, classInfo, knownClassesMap)).build()
                 javaFile.writeTo(Global.filer)

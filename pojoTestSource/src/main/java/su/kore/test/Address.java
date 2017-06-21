@@ -3,15 +3,17 @@ package su.kore.test;
 import su.kore.tools.repojo.Generate;
 import su.kore.tools.repojo.GenerateList;
 import su.kore.tools.repojo.MetaClass;
+import su.kore.tools.repojo.generators.PojoGenerator;
+import su.kore.tools.repojo.generators.PojoWithBuilderGenerator;
 
 /**
  * Created by krad on 20.06.2017.
  */
 @MetaClass
 @GenerateList({
-        @Generate(target = "so", generatorClass = "su.kore.tools.repojo.generators.PojoGenerator",
+        @Generate(target = "so", generatorClass = PojoGenerator.class,
                 packageName = "su.kore.test.sos", suffix = ""),
-        @Generate(target = "do", generatorClass = "su.kore.tools.repojo.generators.PojoWithBuilderGenerator",
+        @Generate(target = "do", generatorClass = PojoWithBuilderGenerator.class,
                 packageName = "su.kore.test.dos", suffix = "DO")
 })
 public class Address {
